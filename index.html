@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="tr-TR">
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.14.1/css/ol.css" type="text/css">
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <style>
+        .map {
+            border-radius: 4px;
+            overflow: hidden;
+            border: solid 4px #003735;
+            height: 580px;
+            width: 70%;
+        }
+
+        .il_form {
+            position: relative;
+            left: 15px;
+            top: 10px;
+            color: #003735;
+        }
+
+        .type_form {
+            position: relative;
+            left: 270px;
+            top: -10px;
+            color: #003735;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.14.1/build/ol.js"></script>
+    <title>Belsis Yazılım Parselasyon Projesi</title>
+</head>
+
+<body style="background-color: #a8dce1;">
+
+    <h2 style="padding-left: 366px; color: #003735;">Parselasyon Haritası</h2>
+    <div id="map" class="map"></div>
+
+    <form style="color: #003735;" class="il_form">
+        <label for="il">İl seçiniz(İsteğe bağlı): &nbsp;</label>
+        <select id="il">
+            <option value="varsayılan">Varsayılan</option>
+            <option value="antalya">Antalya</option>
+            <option value="ankara">Ankara</option>
+            <option value="eskisehir">Eskişehir</option>
+            <option value="istanbul">İstanbul</option>
+            <option value="izmir">İzmir</option>
+            <option value="züvas"> Züvas</option>
+            <option value="haymana"> Haymana</option>
+        </select>
+    </form>
+    <form style="color: #003735;" class="type_form">
+        <label for="type">Seçim Stili: &nbsp;</label>
+        <select id="type">
+            <option value="Point">Nokta</option>
+            <option value="LineString">Şerit</option>
+            <option value="Polygon">Poligon</option>
+        </select>
+    </form>
+
+
+    <script src="main.js"></script>
+
+</body>
+
+</html>
