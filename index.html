@@ -51,7 +51,7 @@
             /* Sit on top */
             padding-top: 200px;
             /* Location of the box */
-            padding-right: 350px;
+            padding-right: 450px;
             left: 20px;
             top: 0;
             width: 100%;
@@ -69,6 +69,7 @@
         /* Modal Content */
         .modal-content {
             background-color: #66ffff;
+            font-size: large;
             margin: auto;
             padding: 20px;
             border: 1px solid #518f5e;
@@ -196,8 +197,10 @@
             <input type="text" id="fname" name="fname"><br><br>
             <p>İlçe Giriniz</p>
             <input type="text" id="fname" name="fname"><br><br>
-            <button id="save" class="save"> Kaydet ve Devam Et</button>
-            <button id="exit" class="exit"> Kaydetmeden Devam Et</button>
+            <p>Detaylı Adres Bilgisi Giriniz</p>
+            <input style="width:747px ;" type="text" id="fname" name="fname"><br><br>
+            <button id="save" style="margin-left: px;" class="save"> Kaydet ve Devam Et</button>
+            <button id="exit" style="margin-left: 350px;" class="exit"> Kaydetmeden Devam Et</button>
         </div>
 
     </div>
@@ -225,11 +228,11 @@
 
     </div>
     <div>
-        <table id="table" class="table">
+        <table id="table_id" class="table">
             <tr>
                 <th class="il_column">İl</th>
                 <th class="ilce_column">İlçe</th>
-                <th class="koordinat_column">Parsel Koordinatları</th>
+                <th class="koordinat_column">Detaylı Adres Bilgisi</th>
                 <th class="edit_column">DÜZENLE</th>
             </tr>
         </table>
@@ -242,10 +245,12 @@
 </html>
 
 
-<!-- TO DOO
+<!-- TO DO
+0) selection pop-updaki devam et butonlarından sonra pop-up kapanmama sorunu
 1) table sayfaya fixlenecek(sağdan taşıyor)
 2) table headerları sticky yapılacak(scroll down/upda saydfadan kaybolmayacak)
 3) tabke satırlar arası background renk farkı
 4) il_selectiona bursa ili/bursanın ufak tefek taşları.mp3 eklenecek (optional)
 5) ajax'a geç
+
 -->
