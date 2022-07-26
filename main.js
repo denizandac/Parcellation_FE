@@ -51,7 +51,9 @@ function addInteractions() {
     map.addInteraction(snap);
     draw.on('drawend', function (evt) {
         console.log(evt.feature);
+        modal.style.display = "block";
     })
+
 }
 
 const ilSelect = document.getElementById('il');
