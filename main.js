@@ -1,5 +1,8 @@
 var coordinate = [0, 0, 0, 0];
+var wkt = new ol.format.WKT();
 const vsource = new ol.source.Vector();
+
+get_all_data();
 
 const vector = new ol.layer.Vector({
     source: vsource,
@@ -20,8 +23,6 @@ const vector = new ol.layer.Vector({
     }),
 });
 
-const modify = new ol.interaction.Modify({ source: vsource });
-
 var map = new ol.Map({
     target: 'map',
     layers: [
@@ -36,10 +37,14 @@ var map = new ol.Map({
     })
 });
 
+var modify = new ol.interaction.Modify({ source: vsource });
 map.addInteraction(modify);
 
 let draw, snap; // global so we can remove them later
-const typeSelect = document.getElementById('type');
+
+
+var savevar = document.getElementById("save");
+var exitvar = document.getElementById("exit");
 
 function addInteractions() {
     draw = new ol.interaction.Draw({
@@ -49,15 +54,36 @@ function addInteractions() {
     map.addInteraction(draw);
     snap = new ol.interaction.Snap({ source: vsource });
     map.addInteraction(snap);
+
+
     draw.on('drawend', function (evt) {
         console.log(evt.feature);
+        cur_feature = evt.feature;
+        cur_wkt = wkt.writeFeature(evt.feature);
         modal.style.display = "block";
-    })
 
+        savevar.onclick = function () {
+            // tabloya ekleme operasyonları
+            var il = document.getElementById("il").value;
+            var ilce = document.getElementById("ilce").value;
+            cur_feature.il = il;
+            cur_feature.ilce = ilce;
+            //insert to table
+            modal.style.display = "none";
+            clear_saves();
+
+        }
+        exitvar.onclick = function () {
+            // mape eklemeden çık
+            console.log(vsource.getFeatures().length);
+            vsource.removeFeature(vsource.getFeatures()[vsource.getFeatures().length - 1]);
+            modal.style.display = "none";
+
+        }
+    })
 }
 
-const ilSelect = document.getElementById('il');
-
+const typeSelect = document.getElementById('type_selection');
 typeSelect.onchange = function () {
     console.log("type_select_changed");
     map.removeInteraction(draw);
@@ -65,12 +91,8 @@ typeSelect.onchange = function () {
     addInteractions();
 };
 
+const ilSelect = document.getElementById('il_selection');
 ilSelect.onchange = function () {
-    /*
-    tr_default.center = ol.proj.fromLonLat([ankara.coordinate.lon, ankara.coordinate.lat]);
-    tr_default.view.zoom = 7;
-    */
-
     console.log(ilSelect.value);
     switch (ilSelect.value) {
         case "varsayılan":
@@ -103,7 +125,6 @@ ilSelect.onchange = function () {
             break;
 
         case "züvas":
-
             var audio = new Audio('züvas.mp3');
             audio.play();
             coordinate = [35.66697915108025, 38.40365106512393, 39.01006713787671, 40.70293430196919];
@@ -120,4 +141,107 @@ ilSelect.onchange = function () {
     }
 };
 
+function clear_saves() {
+    clear(document.getElementById('il').value);
+    clear(document.getElementById('ilce').value);
+}
+
+function insert_to_table(id, wkt, il, ilce) {
+    var il_var = document.getElementById("il");
+    var ilce_var = document.getElementById("ilce");
+    var table = document.getElementById("table_id");
+    var delete_button = document.createElement('input');
+    var update_button = document.createElement('input');
+    delete_button.id = "delete_button";
+    delete_button.type = "button";
+    delete_button.value = "Delete";
+    delete_button.className = "exit";
+    update_button.id = "update_button";
+    update_button.type = "button";
+    update_button.value = "Update";
+    update_button.className = "save";
+    var row = table.insertRow(1);
+    row.id = wkt;
+    var cell1 = row.insertCell(0);
+    var cell2 = row.insertCell(1);
+    var cell3 = row.insertCell(2);
+    var cell4 = row.insertCell(3);
+    var cell5 = row.insertCell(4);
+    cell1.innerHTML = id;
+    cell2.innerHTML = il;
+    cell3.innerHTML = ilce;
+    cell4.innerHTML = wkt;
+    cell5.appendChild(update_button);
+    cell5.appendChild(delete_button);
+
+}
+
 addInteractions();
+
+
+
+// ajax-part
+
+function get_one(id) {
+    $.ajax({
+        url: "https://localhost:44308/api/parcel",
+        dataType: "json",
+        type: "get",
+        contentType: "application/json",
+        success: function (data) {
+            for (var i in data) {
+                if (id == data[i].id) {
+                    insert_to_table(data[i].id, data[i].wkt, data[i].il, data[i].ilce);
+                }
+            }
+        }
+    });
+}
+
+function get_all_data() {
+    $.ajax({
+        url: "https://localhost:44308/api/parcel",
+        dataType: "json",
+        type: "get",
+        contentType: "application/json",
+        success: function (data) {
+
+            for (var i in data) {
+                insert_to_table(data[i].id, data[i].wkt, data[i].il, data[i].ilce);
+            }
+        }
+    });
+}
+
+function send_data(sended_id, sended_il, sended_ilce, sended_wkt) {
+    $.ajax({
+        url: "https://localhost:44308/api/parcel",
+        dataType: "json",
+        type: "post",
+        contentType: "application/json",
+        data: JSON.stringify({ "il": sended_il, "ilce": sended_ilce, "wkt": sended_wkt }),
+        success: function (data) {
+            sended_id.id = data;
+        }
+    });
+}
+
+function delete_data(deleted_id, deleted_il, deleted_ilce, deleted_wkt) {
+    $.ajax({
+        url: "https://localhost:44308/api/parcel",
+        dataType: "json",
+        type: "delete",
+        contentType: "application/json",
+        data: JSON.stringify({ "id": deleted_id, "il": deleted_il, "ilce": deleted_ilce, "wkt": deleted_wkt }),
+    });
+}
+
+function update_data(updated_id, updated_il, updated_ilce, updated_wkt) {
+    $.ajax({
+        url: "https://localhost:44308/api/parcel/update",
+        dataType: "json",
+        type: "post",
+        contentType: "application/json",
+        data: JSON.stringify({ "id": updated_id, "il": updated_il, "ilce": updated_ilce, "wkt": updated_wkt }),
+    });
+}
