@@ -31,8 +31,8 @@ var map = new ol.Map({
         }), vector
     ],
     view: tr_default = new ol.View({
-        center: [35.81117486687671, 38.48532145357543],
-        zoom: 6.33,
+        center: [35.51117486687671, 38.48532145357543],
+        zoom: 6,
         projection: 'EPSG:4326'
     })
 });
@@ -69,6 +69,8 @@ function addInteractions() {
             cur_feature.il = il;
             cur_feature.ilce = ilce;
             //insert to table
+            send_data(cur_feature, il, ilce, cur_wkt);
+            insert_to_table(cur_feature.id, cur_wkt, il, ilce);
             modal.style.display = "none";
             clear_saves();
 
@@ -142,8 +144,8 @@ ilSelect.onchange = function () {
 };
 
 function clear_saves() {
-    clear(document.getElementById('il').value);
-    clear(document.getElementById('ilce').value);
+    document.getElementById('il').value = " ";
+    document.getElementById('ilce').value = " ";
 }
 
 function insert_to_table(id, wkt, il, ilce) {
@@ -154,11 +156,11 @@ function insert_to_table(id, wkt, il, ilce) {
     var update_button = document.createElement('input');
     delete_button.id = "delete_button";
     delete_button.type = "button";
-    delete_button.value = "Delete";
+    delete_button.value = "Sil";
     delete_button.className = "exit";
     update_button.id = "update_button";
     update_button.type = "button";
-    update_button.value = "Update";
+    update_button.value = "Düzenle";
     update_button.className = "save";
     var row = table.insertRow(1);
     row.id = wkt;
@@ -174,11 +176,76 @@ function insert_to_table(id, wkt, il, ilce) {
     cell5.appendChild(update_button);
     cell5.appendChild(delete_button);
 
+    delete_function(id, wkt, il, ilce);
+    update_function(id, wkt, il, ilce);
+}
+
+function delete_function(id, wkt, il, ilce,) {
+    var cur_button = document.getElementById("delete_button");
+    var cur_wkt = wkt;
+    var cur_il = il;
+    var cur_ilce = ilce;
+
+    cur_button.onclick = function () {
+        var deleted_row = document.getElementById(wkt);
+        deleted_row.parentNode.removeChild(deleted_row);
+        delete_data(id, cur_il, cur_ilce, cur_wkt);
+        var features = vsource.getFeatures();
+        for (var i in features) {
+            if (features[i].id == id) {
+                vsource.removeFeature(features[i]);
+            }
+        }
+        console.log("parsel updated");
+        alert("Parsel Silindi");
+    }
+}
+
+function update_function(id, wkt, il, ilce,) {
+    var cur_button2 = document.getElementById("update_button");
+    var cur_wkt = wkt;
+    var last_il = il;
+    var last_ilce = ilce;
+
+    cur_button2.onclick = function () {
+        document.getElementById("il_edit").value = last_il;
+        document.getElementById("ilce_edit").value = last_ilce;
+        modal_edit.style.display = "block";
+
+        document.getElementById("editParsel").onclick = function () {
+            var cur_il = document.getElementById("il_edit").value;
+            var cur_ilce = document.getElementById("ilce_edit").value;
+            update_data(id, cur_il, cur_ilce, cur_wkt);
+            /*
+            for (var i in document.getElementById("table_id").rows) {
+                var cur_row = document.getElementById("table_id").rows[i];
+                if (cur_row[1] == last_il && cur_row[2] == last_ilce) {
+                    cur_row[1] = cur_il;
+                    cur_row[2] = cur_ilce;
+                }
+            }
+            */
+            console.log("parsel updated");
+            modal_edit.style.display = "none";
+        }
+        document.getElementById("deleteParsel").onclick = function () {
+            var deleted_row = document.getElementById(wkt);
+            deleted_row.parentNode.removeChild(deleted_row);
+            delete_data(id, cur_il, cur_ilce, cur_wkt);
+            var features = vsource.getFeatures();
+            for (var i in features) {
+                if (features[i].id == id) {
+                    vsource.removeFeature(features[i]);
+                }
+            }
+            console.log("parsel deleted");
+            modal_edit.style.display = "none";
+            alert("Parsel Silindi");
+        }
+    }
 }
 
 addInteractions();
-
-
 
 // ajax-part
 
@@ -205,15 +272,13 @@ function get_all_data() {
         type: "get",
         contentType: "application/json",
         success: function (data) {
-
             for (var i in data) {
                 insert_to_table(data[i].id, data[i].wkt, data[i].il, data[i].ilce);
             }
         }
     });
 }
-
-function send_data(sended_id, sended_il, sended_ilce, sended_wkt) {
+function send_data(sended_, sended_il, sended_ilce, sended_wkt) {
     $.ajax({
         url: "https://localhost:44308/api/parcel",
         dataType: "json",
@@ -221,27 +286,27 @@ function send_data(sended_id, sended_il, sended_ilce, sended_wkt) {
         contentType: "application/json",
         data: JSON.stringify({ "il": sended_il, "ilce": sended_ilce, "wkt": sended_wkt }),
         success: function (data) {
-            sended_id.id = data;
+            sended_.id = data;
         }
     });
 }
 
-function delete_data(deleted_id, deleted_il, deleted_ilce, deleted_wkt) {
+function delete_data(deleted_, deleted_il, deleted_ilce, deleted_wkt) {
     $.ajax({
         url: "https://localhost:44308/api/parcel",
         dataType: "json",
         type: "delete",
         contentType: "application/json",
-        data: JSON.stringify({ "id": deleted_id, "il": deleted_il, "ilce": deleted_ilce, "wkt": deleted_wkt }),
+        data: JSON.stringify({ "id": deleted_, "il": deleted_il, "ilce": deleted_ilce, "wkt": deleted_wkt }),
     });
 }
 
-function update_data(updated_id, updated_il, updated_ilce, updated_wkt) {
+function update_data(updated_, updated_il, updated_ilce, updated_wkt) {
     $.ajax({
         url: "https://localhost:44308/api/parcel/update",
         dataType: "json",
         type: "post",
         contentType: "application/json",
-        data: JSON.stringify({ "id": updated_id, "il": updated_il, "ilce": updated_ilce, "wkt": updated_wkt }),
+        data: JSON.stringify({ "id": updated_, "il": updated_il, "ilce": updated_ilce, "wkt": updated_wkt }),
     });
 }

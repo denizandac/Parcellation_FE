@@ -11,6 +11,7 @@
     <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
     <style>
         .map {
+            margin-left: 20px;
             border-radius: 4px;
             overflow: hidden;
             border: solid 4px #003735;
@@ -21,7 +22,7 @@
         .il_form {
             color: #003735;
             margin-top: 10px;
-            margin-left: 20px;
+            margin-left: 26px;
         }
 
         .il_form select {
@@ -59,7 +60,7 @@
             position: fixed;
             z-index: 1;
             padding-top: 200px;
-            padding-right: 450px;
+            padding-right: 700px;
             left: 20px;
             top: 0;
             width: 100%;
@@ -87,6 +88,8 @@
             font-weight: bold;
         }
 
+
+
         .save {
             background-color: #00ff37a0;
         }
@@ -97,6 +100,18 @@
 
         .close:hover,
         .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .close_edit {
+            float: right;
+            font-weight: bold;
+        }
+
+        .close_edit:hover,
+        .close_edit:focus {
             color: #000;
             text-decoration: none;
             cursor: pointer;
@@ -134,7 +149,9 @@
             margin-top: -20px;
         }
 
-        .table {}
+        .table {
+            margin-left: 20px;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.14.1/build/ol.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
@@ -193,16 +210,12 @@
     <div id="myEditModal" class="modal_edit">
         <div class="modal-content">
             <span class="close_edit">&times;</span>
-            <div class="edit_form">
-                <form>
-                    <p>İl</p>
-                    <input type="text" id="il_edit">
-                    <p>İlçe</p>
-                    <input type="text" id="ilce_edit">
-                </form>
-            </div>
+            <p>Güncel İl Giriniz</p>
+            <input type="text" id="il_edit" name="il_edit"><br><br>
+            <p>Güncel İlçe Giriniz</p>
+            <input type="text" id="ilce_edit" name="ilce_edit"><br><br>
             <button class="save" id="editParsel">Parseli Güncelle</button>
-            <button class="exit" id="deleteParsel">Parseli Sil</button>
+            <button class="exit" style="margin-left: 300px;" id="deleteParsel">Parseli Sil</button>
         </div>
     </div>
 
@@ -211,7 +224,9 @@
 
     <script>
         var modal = document.getElementById("myModal");
+        var modal_edit = document.getElementById("myEditModal")
         var spanvar = document.getElementsByClassName("close")[0];
+        var spanvar2 = document.getElementsByClassName("close_edit")[0];
 
         spanvar.onclick = function () {
             vsource.removeFeature(vsource.getFeatures()[vsource.getFeatures().length - 1]);
@@ -222,13 +237,10 @@
                 vsource.removeFeature(vsource.getFeatures()[vsource.getFeatures().length - 1]);
                 modal.style.display = "none";
             }
-            else if (event.target == modal2) {
+            else if (event.target == modal_edit) {
                 modal_edit.style.display = "none";
             }
         }
-
-        var modal2 = document.getElementById("myEditModal");
-        var spanvar2 = document.getElementsByClassName("close_edit")[0];
 
         spanvar2.onclick = function () {
             modal_edit.style.display = "none";
@@ -237,11 +249,12 @@
 
     <div>
         <table id="table_id" class="table">
-            <tr>
+            <tr style="position: sticky;">
                 <th class="id_column">Parsel No</th>
                 <th class="il_column">İl</th>
                 <th class="ilce_column">İlçe</th>
-                <th class="edit_column">DÜZENLE</th>
+                <th class="ilce_column">Detaylı Bilgi</th>
+                <th class="edit_column">Düzenle / Sil</th>
             </tr>
         </table>
     </div>
@@ -253,7 +266,8 @@
 
 <!-- TO DO
 1) table sayfaya fixlenecek(sağdan taşıyor)
-2) table headerları sticky yapılacak(scroll down/upda saydfadan kaybolmayacak)
-5) ajax'a geç
-
+2) get_all_parcels'ten sonra çekilen data ile haritaya çizim yaptırılacak.
+3)input barların boş olup olmaması kontrol edilecek
+4)önceden kaydedilen çizimler mouse ile modify edildikten sonra wkt değiştirilecek
+5) update edilir edilmez tabloda değişiklik yapmıyor
 -->
