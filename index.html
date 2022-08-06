@@ -30,9 +30,8 @@
         }
 
         .type_form {
-            position: relative;
-            left: 300px;
-            top: -25px;
+            margin-left: 320px;
+            margin-top: -25px;
             color: #003735;
         }
 
@@ -51,8 +50,7 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgb(0, 0, 0);
-            background-color: rgba(0, 0, 0, 0.4);
+            background-color: rgba(57, 255, 179, 0.3);
         }
 
         .modal_edit {
@@ -66,8 +64,7 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgb(0, 0, 0);
-            background-color: rgba(0, 0, 0, 0.4);
+            background-color: rgba(57, 255, 179, 0.3);
         }
 
         /* Modal Content */
@@ -210,7 +207,7 @@
     <div id="myEditModal" class="modal_edit">
         <div class="modal-content">
             <span class="close_edit">&times;</span>
-            <p>Güncel İl Giriniz</p>
+            <p>İl Giriniz</p>
             <input type="text" id="il_edit" name="il_edit"><br><br>
             <p>Güncel İlçe Giriniz</p>
             <input type="text" id="ilce_edit" name="ilce_edit"><br><br>
@@ -248,13 +245,13 @@
     </script>
 
     <div>
-        <table id="table_id" class="table">
-            <tr style="position: sticky;">
-                <th class="id_column">Parsel No</th>
-                <th class="il_column">İl</th>
-                <th class="ilce_column">İlçe</th>
+        <table style="width: 1400px;" ; id="table_id" class="table">
+            <tr>
+                <th style="width: 170px;" ;class="id_column">Parsel No</th>
+                <th style="width: 250px;" class="il_column">İl</th>
+                <th style="width: 250px;" class="ilce_column">İlçe</th>
                 <th class="ilce_column">Detaylı Bilgi</th>
-                <th class="edit_column">Düzenle / Sil</th>
+                <th style="width: 200px;" ;class="edit_column">Düzenle / Sil</th>
             </tr>
         </table>
     </div>
@@ -265,9 +262,7 @@
 
 
 <!-- TO DO
-1) table sayfaya fixlenecek(sağdan taşıyor)
-2) get_all_parcels'ten sonra çekilen data ile haritaya çizim yaptırılacak.
-3)input barların boş olup olmaması kontrol edilecek
 4)önceden kaydedilen çizimler mouse ile modify edildikten sonra wkt değiştirilecek
 5) update edilir edilmez tabloda değişiklik yapmıyor
+6) tablodan siler silmez haritadan silmiyor
 -->

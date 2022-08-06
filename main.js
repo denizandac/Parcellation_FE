@@ -55,6 +55,28 @@ function addInteractions() {
     snap = new ol.interaction.Snap({ source: vsource });
     map.addInteraction(snap);
 
+    modify.on('modifyend', function (evt) {
+        var cur_wkt = evt.features.getArray()[0];
+
+        update_data(cur_wkt.id, cur_wkt.il, cur_wkt.ilce, wkt.writeFeature(cur_wkt));
+        var table = document.getElementById('table_id');
+        while (table.rows.length > 1) {
+            table.deleteRow(1);
+        }
+        $.ajax({
+            url: 'https://localhost:44308/api/parcel',
+            dataType: 'json',
+            type: 'get',
+            contentType: 'application/json',
+            data: { "data": "check" },
+            success: function (data) {
+                for (var i in data) {
+                    insert_to_table(data[i].id, data[i].wkt, data[i].il, data[i].ilce);
+                }
+            }
+        });
+
+    });
 
     draw.on('drawend', function (evt) {
         console.log(evt.feature);
@@ -64,16 +86,35 @@ function addInteractions() {
 
         savevar.onclick = function () {
             // tabloya ekleme operasyonları
-            var il = document.getElementById("il").value;
-            var ilce = document.getElementById("ilce").value;
-            cur_feature.il = il;
-            cur_feature.ilce = ilce;
-            //insert to table
-            send_data(cur_feature, il, ilce, cur_wkt);
-            insert_to_table(cur_feature.id, cur_wkt, il, ilce);
-            modal.style.display = "none";
-            clear_saves();
-
+            if (!document.getElementById("il").value && !document.getElementById("ilce").value) {
+                alert("Lütfen İl ve İlçe Giriniz");
+            }
+            else if (!document.getElementById("il").value && document.getElementById("ilce").value) {
+                alert("Lütfen İl Giriniz");
+            }
+            else if (document.getElementById("il").value && !document.getElementById("ilce").value) {
+                alert("Lütfen İlçe Giriniz");
+            }
+            else {
+                var il = document.getElementById("il").value;
+                var ilce = document.getElementById("ilce").value;
+                cur_feature.il = il;
+                cur_feature.ilce = ilce;
+                //insert to table
+                $.ajax({
+                    url: "https://localhost:44308/api/parcel",
+                    dataType: "json",
+                    type: "post",
+                    contentType: "application/json",
+                    data: JSON.stringify({ "il": cur_feature.il, "ilce": cur_feature.ilce, "wkt": cur_wkt }),
+                    success: function (data) {
+                        cur_feature.id = data.id;
+                        insert_to_table(cur_feature.id, cur_wkt, il, ilce);
+                    }
+                });
+                modal.style.display = "none";
+                clear_saves();
+            }
         }
         exitvar.onclick = function () {
             // mape eklemeden çık
@@ -196,7 +237,7 @@ function delete_function(id, wkt, il, ilce,) {
                 vsource.removeFeature(features[i]);
             }
         }
-        console.log("parsel updated");
+        console.log("parsel deleted");
         alert("Parsel Silindi");
     }
 }
@@ -213,20 +254,28 @@ function update_function(id, wkt, il, ilce,) {
         modal_edit.style.display = "block";
 
         document.getElementById("editParsel").onclick = function () {
-            var cur_il = document.getElementById("il_edit").value;
-            var cur_ilce = document.getElementById("ilce_edit").value;
-            update_data(id, cur_il, cur_ilce, cur_wkt);
-            /*
-            for (var i in document.getElementById("table_id").rows) {
-                var cur_row = document.getElementById("table_id").rows[i];
-                if (cur_row[1] == last_il && cur_row[2] == last_ilce) {
-                    cur_row[1] = cur_il;
-                    cur_row[2] = cur_ilce;
-                }
+            if (!document.getElementById("il_edit").value && !document.getElementById("ilce_edit").value) {
+                alert("Lütfen İl ve İlçe Giriniz");
             }
-            */
-            console.log("parsel updated");
-            modal_edit.style.display = "none";
+            else if (!document.getElementById("il_edit").value && document.getElementById("ilce_edit").value) {
+                alert("Lütfen İl Giriniz");
+            }
+            else if (document.getElementById("il_edit").value && !document.getElementById("ilce_edit").value) {
+                alert("Lütfen İlçe Giriniz");
+            }
+            else {
+                var cur_il = document.getElementById("il_edit").value;
+                var cur_ilce = document.getElementById("ilce_edit").value;
+                update_data(id, cur_il, cur_ilce, cur_wkt);
+                for (var i in document.getElementById("table_id").rows) {
+                    var cur_row = document.getElementById("table_id").rows[i];
+                    if (cur_row[1] == last_il && cur_row[2] == last_ilce) {
+                        cur_row.cell2.innerHTML = cur_il;
+                        cur_row.cell3.innerHTML = cur_ilce;
+                    }
+                }
+                modal_edit.style.display = "none";
+            }
         }
         document.getElementById("deleteParsel").onclick = function () {
             var deleted_row = document.getElementById(wkt);
@@ -244,7 +293,6 @@ function update_function(id, wkt, il, ilce,) {
         }
     }
 }
-
 addInteractions();
 
 // ajax-part
@@ -274,6 +322,16 @@ function get_all_data() {
         success: function (data) {
             for (var i in data) {
                 insert_to_table(data[i].id, data[i].wkt, data[i].il, data[i].ilce);
+                var draw_wkt = data[i].wkt;
+                var cur_format = new ol.format.WKT();
+                var cur_feature = cur_format.readFeature(draw_wkt, {
+                    dataProjection: 'EPSG:4326',
+                    featureProjection: 'EPSG:4326',
+                });
+                vsource.addFeature(cur_feature);
+                cur_feature.id = data[i].id;
+                cur_feature.il = data[i].il;
+                cur_feature.ilce = data[i].ilce;
             }
         }
     });
@@ -286,7 +344,7 @@ function send_data(sended_, sended_il, sended_ilce, sended_wkt) {
         contentType: "application/json",
         data: JSON.stringify({ "il": sended_il, "ilce": sended_ilce, "wkt": sended_wkt }),
         success: function (data) {
-            sended_.id = data;
+            sended_ = data;
         }
     });
 }
@@ -308,5 +366,20 @@ function update_data(updated_, updated_il, updated_ilce, updated_wkt) {
         type: "post",
         contentType: "application/json",
         data: JSON.stringify({ "id": updated_, "il": updated_il, "ilce": updated_ilce, "wkt": updated_wkt }),
+    });
+}
+
+function get() {
+    $.ajax({
+        url: 'https://localhost:44308/api/parcel',
+        dataType: 'json',
+        type: 'get',
+        contentType: 'application/json',
+        data: { "data": "check" },
+        success: function (data) {
+            for (var i in data) {
+                insert_to_table(data[i].id, data[i].wkt, data[i].il, data[i].ilce);
+            }
+        }
     });
 }
