@@ -204,7 +204,7 @@ function insert_to_table(id, wkt, il, ilce) {
     update_button.value = "Düzenle";
     update_button.className = "save";
     var row = table.insertRow(1);
-    row.id = wkt;
+    row.id = id;
     var cell1 = row.insertCell(0);
     var cell2 = row.insertCell(1);
     var cell3 = row.insertCell(2);
@@ -228,7 +228,7 @@ function delete_function(id, wkt, il, ilce,) {
     var cur_ilce = ilce;
 
     cur_button.onclick = function () {
-        var deleted_row = document.getElementById(wkt);
+        var deleted_row = document.getElementById(id);
         deleted_row.parentNode.removeChild(deleted_row);
         delete_data(id, cur_il, cur_ilce, cur_wkt);
         var features = vsource.getFeatures();
@@ -267,11 +267,14 @@ function update_function(id, wkt, il, ilce,) {
                 var cur_il = document.getElementById("il_edit").value;
                 var cur_ilce = document.getElementById("ilce_edit").value;
                 update_data(id, cur_il, cur_ilce, cur_wkt);
-                for (var i in document.getElementById("table_id").rows) {
-                    var cur_row = document.getElementById("table_id").rows[i];
-                    if (cur_row[1] == last_il && cur_row[2] == last_ilce) {
-                        cur_row.cell2.innerHTML = cur_il;
-                        cur_row.cell3.innerHTML = cur_ilce;
+
+                for (var i in (document.getElementById("table_id")).rows) {
+                    var cur_row = (document.getElementById("table_id")).rows[i];
+                    if (cur_row.id != undefined) {
+                        if (cur_row.id == id) {
+                            cur_row.cells[1].innerHTML = cur_il;
+                            cur_row.cells[2].innerHTML = cur_ilce;
+                        }
                     }
                 }
                 modal_edit.style.display = "none";
