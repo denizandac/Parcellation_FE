@@ -11,32 +11,35 @@
     <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
     <style>
         .map {
-            margin-left: 20px;
+            margin-left: 1px;
+            margin-top: -18px;
             border-radius: 4px;
             overflow: hidden;
-            border: solid 4px #003735;
-            height: 550px;
-            width: 70%;
+            border: solid 4px #02594581;
+            height: 650px;
+            width: 56%;
         }
 
         .il_form {
-            color: #003735;
+            font-size: x-large;
+            color: #025945;
             margin-top: 10px;
-            margin-left: 26px;
+            margin-left: 5px;
         }
 
         .il_form select {
-            background-color: #02d87493;
+            background-color: #02594581;
         }
 
         .type_form {
-            margin-left: 320px;
-            margin-top: -25px;
-            color: #003735;
+            font-size: x-large;
+            margin-left: 670px;
+            margin-top: -43px;
+            color: #025945;
         }
 
         .type_form select {
-            background-color: #02d87493;
+            background-color: #02594581;
         }
 
         .modal {
@@ -44,7 +47,7 @@
             position: fixed;
             z-index: 1;
             padding-top: 200px;
-            padding-right: 450px;
+            padding-right: 730px;
             left: 20px;
             top: 0;
             width: 100%;
@@ -58,7 +61,7 @@
             position: fixed;
             z-index: 1;
             padding-top: 200px;
-            padding-right: 700px;
+            padding-right: 730px;
             left: 20px;
             top: 0;
             width: 100%;
@@ -69,11 +72,11 @@
 
         /* Modal Content */
         .modal-content {
-            background-color: #02d874;
+            background-color: #025945a1;
             font-size: large;
             margin: auto;
             padding: 20px;
-            border: 1px solid #02d874;
+            border: 1px solid #025945a1;
             width: 80%;
         }
 
@@ -116,12 +119,12 @@
 
         .topnav {
             overflow: hidden;
-            background-color: #4f6161;
+            background-color: #025945;
         }
 
         .topnav a {
             float: left;
-            color: #f2f2f2;
+            color: #f58a18;
             text-align: center;
             padding: 26px 20px;
             text-decoration: none;
@@ -129,13 +132,13 @@
         }
 
         .topnav a:hover {
-            background-color: #02d874;
-            color: #002e15;
+            background-color: #f58a18;
+            color: #025945;
         }
 
         .topnav a.active {
-            background-color: #02d874;
-            color: #002e15;
+            background-color: #f58a18;
+            color: #025945;
         }
 
         .logo-image {
@@ -147,7 +150,27 @@
         }
 
         .table {
-            margin-left: 20px;
+            padding: 10px;
+            border: 3px solid 025945;
+            border-collapse: collapse;
+        }
+
+        th {
+            padding: 10px;
+            border: 3px solid 025945;
+            border-collapse: collapse;
+        }
+
+        tr {
+            padding: 10px;
+            border: 3px solid 025945;
+            border-collapse: collapse;
+        }
+
+        td {
+            padding: 10px;
+            border: 3px solid 025945;
+            border-collapse: collapse;
         }
     </style>
     <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.14.1/build/ol.js"></script>
@@ -157,7 +180,7 @@
     <title>Belsis Yazılım Parselasyon Projesi</title>
 </head>
 
-<body style="background-color: #a8dce1;">
+<body style="background-color: #00ffc37e;">
     <div class="topnav">
         <a class="navbar-brand" href="/">
             <div class="logo-image">
@@ -169,20 +192,20 @@
     </div>
     <br>
     <div id="map" class="map"></div>
-    <form style="color: #003735;" class="il_form">
+    <form style="color: #025945;" class="il_form">
         <label for="il_selection">İl seçiniz(İsteğe bağlı): &nbsp;</label>
         <select id="il_selection">
-            <option value="varsayılan">Varsayılan</option>
-            <option value="antalya">Antalya</option>
-            <option value="ankara">Ankara</option>
-            <option value="eskisehir">Eskişehir</option>
-            <option value="istanbul">İstanbul</option>
-            <option value="izmir">İzmir</option>
-            <option value="züvas"> Sivas</option>
-            <option value="haymana"> Haymana</option>
+            <option value=" ">Varsayılan</option>
+            <option value="Antalya">Antalya</option>
+            <option value="Ankara">Ankara</option>
+            <option value="Eskisehir">Eskişehir</option>
+            <option value="İstanbul">İstanbul</option>
+            <option value="İzmir">İzmir</option>
+            <option value="Sivas"> Sivas</option>
+            <option value="Haymana"> Haymana</option>
         </select>
     </form>
-    <form style="color: #003735;" class="type_form">
+    <form style="color: #025945;" class="type_form">
         <label for="type_selection">Seçim Stili: &nbsp;</label>
         <select id="type_selection">
             <option value="Point">Nokta</option>
@@ -191,28 +214,35 @@
         </select>
     </form>
 
+    <!-- <button class="delete_all_button" id="delete_all_button"> Tüm Parselleri Sil</button> -->
+
+
     <!-- The Modal -->
     <div id="myModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
+            <h1 style=" margin-top: -15px; text-align: center;">Parselasyon Ekleme</h1>
+            <br>
             <p>İl Giriniz</p>
             <input type="text" id="il" name="il"><br><br>
             <p>İlçe Giriniz</p>
             <input type="text" id="ilce" name="ilce"><br><br>
             <button id="save" class="save"> Kaydet ve Devam Et</button>
-            <button id="exit" style="margin-left: 200px;" class="exit"> Kaydetmeden Devam Et</button>
+            <button id="exit" style="margin-left: 300px;" class="exit"> Kaydetmeden Devam Et</button>
         </div>
     </div>
 
     <div id="myEditModal" class="modal_edit">
         <div class="modal-content">
             <span class="close_edit">&times;</span>
+            <h1 style=" margin-top: -15px; text-align: center;">Parselasyon Düzenleme</h1>
+            <br>
             <p>İl Giriniz</p>
             <input type="text" id="il_edit" name="il_edit"><br><br>
             <p>Güncel İlçe Giriniz</p>
             <input type="text" id="ilce_edit" name="ilce_edit"><br><br>
             <button class="save" id="editParsel">Parseli Güncelle</button>
-            <button class="exit" style="margin-left: 300px;" id="deleteParsel">Parseli Sil</button>
+            <button class="exit" style="margin-left: 450px;" id="deleteParsel">Parseli Sil</button>
         </div>
     </div>
 
@@ -245,13 +275,14 @@
     </script>
 
     <div>
-        <table style="width: 1400px;" ; id="table_id" class="table">
+        <table style="width: 700px; position: relative; margin-top: -695px; margin-left: 935px; border: #000;"
+            id="table_id" class="table">
             <tr>
-                <th style="width: 170px;" ;class="id_column">Parsel No</th>
-                <th style="width: 250px;" class="il_column">İl</th>
-                <th style="width: 250px;" class="ilce_column">İlçe</th>
-                <th class="ilce_column">Detaylı Bilgi</th>
-                <th style="width: 200px;" ;class="edit_column">Düzenle / Sil</th>
+                <th style="width: 140px; background-color: #025945d6;" class="id_column">Parsel No</th>
+                <th style="width: 210px;background-color: #025945d6;" class="il_column">İl</th>
+                <th style="width: 210px;background-color: #025945d6;" class="ilce_column">İlçe</th>
+                <th style="width: 160px;background-color: #025945d6;" class="detay_column">Detaylı Bilgi</th>
+                <th style="width: 160px;background-color: #025945d6;" class="edit_column">Düzenle / Sil</th>
             </tr>
         </table>
     </div>
@@ -262,4 +293,4 @@
 
 
 <!-- TO DO
-1) ModifyEnd inputları databaseden güncel çekmiyor. Düzenle(edit button on table) dedikten sonra yapılan modifiyeler(modifyEnd) parsel özelliklerini eski haline geri döndürüyor.
+6) snap ile yeni parsel oluşturmak yerine var olan parseli düzenlemek

@@ -1,6 +1,8 @@
 var coordinate = [0, 0, 0, 0];
 var wkt = new ol.format.WKT();
 const vsource = new ol.source.Vector();
+var il_selected;
+var flag;
 
 get_all_data();
 
@@ -8,16 +10,16 @@ const vector = new ol.layer.Vector({
     source: vsource,
     style: new ol.style.Style({
         fill: new ol.style.Fill({                   //Polygon Layout
-            color: 'rgba(122, 255, 122, 0.3)',
+            color: 'rgba(2, 89, 69, 0.300)',
         }),
         stroke: new ol.style.Stroke({               //Line Layout
-            color: '#00580d',
+            color: '#025945',
             width: 3,
         }),
         image: new ol.style.Circle({
             radius: 5,
             fill: new ol.style.Fill({               //Single Point Layout
-                color: '#00ad1a',
+                color: '#025945',
             }),
         }),
     }),
@@ -32,7 +34,7 @@ var map = new ol.Map({
     ],
     view: tr_default = new ol.View({
         center: [35.51117486687671, 38.48532145357543],
-        zoom: 6,
+        zoom: 6.1,
         projection: 'EPSG:4326'
     })
 });
@@ -52,12 +54,13 @@ function addInteractions() {
         type: typeSelect.value,
     });
     map.addInteraction(draw);
+
     snap = new ol.interaction.Snap({ source: vsource });
     map.addInteraction(snap);
 
     modify.on('modifyend', function (evt) {
         var cur_wkt = evt.features.getArray()[0];
-
+        flag = 0;
         update_data(cur_wkt.id, cur_wkt.il, cur_wkt.ilce, wkt.writeFeature(cur_wkt));
         var table = document.getElementById('table_id');
         while (table.rows.length > 1) {
@@ -71,19 +74,26 @@ function addInteractions() {
             data: { "data": "check" },
             success: function (data) {
                 for (var i in data) {
-                    insert_to_table(data[i].id, data[i].wkt, data[i].il, data[i].ilce);
+                    // debugger
+                    if (flag != data.length) {
+                        flag++;
+                        insert_to_table(data[i].id, data[i].wkt, data[i].il, data[i].ilce);
+                    }
                 }
             }
         });
-
+        clear_saves();
     });
 
     draw.on('drawend', function (evt) {
         console.log(evt.feature);
         cur_feature = evt.feature;
         cur_wkt = wkt.writeFeature(evt.feature);
-        modal.style.display = "block";
 
+        if (il_selected != undefined && il_selected != "Varsayılan") {
+            document.getElementById("il").value = il_selected;
+        }
+        modal.style.display = "block";
         savevar.onclick = function () {
             // tabloya ekleme operasyonları
             if (!document.getElementById("il").value && !document.getElementById("ilce").value) {
@@ -136,45 +146,45 @@ typeSelect.onchange = function () {
 
 const ilSelect = document.getElementById('il_selection');
 ilSelect.onchange = function () {
-    console.log(ilSelect.value);
+    il_selected = ilSelect.value;
     switch (ilSelect.value) {
-        case "varsayılan":
+        case "Varsayılan":
             map.getView().fit([25.510800189155127, 35.8222391628244, 45.01489847773129, 40.86525153675757], map.getSize());
             break;
 
-        case "antalya":
+        case "Antalya":
             coordinate = [29.10650084190967, 35.811034908759645, 32.76815589623481, 37.55449929665927];
             map.getView().fit(coordinate, map.getSize());
             break;
 
-        case "ankara":
+        case "Ankara":
             coordinate = [32.53327463710088, 39.675318075832415, 33.077913086276254, 40.07245027835613];
             map.getView().fit(coordinate, map.getSize());
             break;
 
-        case "eskisehir":
+        case "Eskisehir":
             coordinate = [29.768962060873545, 38.959541960310034, 32.14294905433248, 40.267807238439104];
             map.getView().fit(coordinate, map.getSize());
             break;
 
-        case "istanbul":
+        case "İstanbul":
             coordinate = [27.779327966474582, 40.67360032713637, 30.06122383706303, 41.72694348494914];
             map.getView().fit(coordinate, map.getSize());
             break;
 
-        case "izmir":
+        case "İzmir":
             coordinate = [26.142466377787763, 37.73303061464326, 28.571379377252004, 39.436895215354696];
             map.getView().fit(coordinate, map.getSize());
             break;
 
-        case "züvas":
+        case "Sivas":
             var audio = new Audio('züvas.mp3');
             audio.play();
             coordinate = [35.66697915108025, 38.40365106512393, 39.01006713787671, 40.70293430196919];
             map.getView().fit(coordinate, map.getSize());
             break;
 
-        case "haymana":
+        case "Haymana":
             coordinate = [32.4859955753491, 39.42228574503231, 32.5160619735757, 39.448825123466946];
             map.getView().fit(coordinate, map.getSize());
             break;
@@ -197,12 +207,14 @@ function insert_to_table(id, wkt, il, ilce) {
     var update_button = document.createElement('input');
     delete_button.id = "delete_button";
     delete_button.type = "button";
-    delete_button.value = "Sil";
+    delete_button.value = "SİL";
     delete_button.className = "exit";
+    delete_button.style = "width: 80px;"
     update_button.id = "update_button";
     update_button.type = "button";
-    update_button.value = "Düzenle";
+    update_button.value = "DÜZENLE";
     update_button.className = "save";
+    update_button.style = "width: 80px;"
     var row = table.insertRow(1);
     row.id = id;
     var cell1 = row.insertCell(0);
@@ -220,6 +232,21 @@ function insert_to_table(id, wkt, il, ilce) {
     delete_function(id, wkt, il, ilce);
     update_function(id, wkt, il, ilce);
 }
+// var delete_all_button = document.getElementById("delete_all_button");
+// delete_all_button.onclick = function () {
+//     console.log("tüm parseller silindi");
+//     for (var i in (document.getElementById("table_id")).rows) {
+//         var cur_row = (document.getElementById("table_id")).rows[i];
+//         if (cur_row.id != undefined && cur_row.id) {
+//             console.log(cur_row)
+//             console.log(cur_row.cells[0])
+//             console.log(cur_row.cells[1])
+//             console.log(cur_row.cells[2])
+//             console.log(cur_row.cells[3])
+//             delete_data(console.log(cur_row.cells[0]), console.log(cur_row.cells[1]), console.log(cur_row.cells[2]), console.log(cur_row.cells[3]));
+//         }
+//     }
+// }
 
 function delete_function(id, wkt, il, ilce,) {
     var cur_button = document.getElementById("delete_button");
@@ -277,11 +304,15 @@ function update_function(id, wkt, il, ilce,) {
                         }
                     }
                 }
+                vsource.getFeatures()[vsource.getFeatures().length - 1].il = cur_il;
+                vsource.getFeatures()[vsource.getFeatures().length - 1].ilce = cur_ilce;
                 modal_edit.style.display = "none";
             }
         }
         document.getElementById("deleteParsel").onclick = function () {
-            var deleted_row = document.getElementById(wkt);
+            var cur_il = document.getElementById("il_edit").value;
+            var cur_ilce = document.getElementById("ilce_edit").value;
+            var deleted_row = document.getElementById(id);
             deleted_row.parentNode.removeChild(deleted_row);
             delete_data(id, cur_il, cur_ilce, cur_wkt);
             var features = vsource.getFeatures();

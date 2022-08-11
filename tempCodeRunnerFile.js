@@ -1,1 +1,1 @@
-map.setView(new_view);
+debugger
