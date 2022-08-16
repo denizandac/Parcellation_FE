@@ -67,7 +67,7 @@ function addInteractions() {
             table.deleteRow(1);
         }
         $.ajax({
-            url: 'https://localhost:44308/api/parcel',
+            url: 'https://localhost:44398/api/parcel',
             dataType: 'json',
             type: 'get',
             contentType: 'application/json',
@@ -86,7 +86,8 @@ function addInteractions() {
     });
 
     draw.on('drawend', function (evt) {
-        console.log(evt.feature);
+        var sended_geometry_coordinates = evt.feature.getGeometry().getCoordinates();
+        console.log(sended_geometry_coordinates);
         cur_feature = evt.feature;
         cur_wkt = wkt.writeFeature(evt.feature);
 
@@ -112,7 +113,7 @@ function addInteractions() {
                 cur_feature.ilce = ilce;
                 //insert to table
                 $.ajax({
-                    url: "https://localhost:44308/api/parcel",
+                    url: "https://localhost:44398/api/parcel",
                     dataType: "json",
                     type: "post",
                     contentType: "application/json",
@@ -194,6 +195,17 @@ ilSelect.onchange = function () {
     }
 };
 
+function convert_string_to_lonlat(curr_wkt) {
+    var ilk = curr_wkt.split("(");
+    var ilk_ = ilk[1].split(" ");
+    var ikinci = ilk_[1].split(")");
+    var ilk_float = parseFloat(ilk_[0]);
+    var ikinci_float = parseFloat(ikinci[0]);
+    var arr;
+    arr[0] = ilk_float;
+    arr[1] = ikinci_float;
+    return arr;
+}
 function clear_saves() {
     document.getElementById('il').value = " ";
     document.getElementById('ilce').value = " ";
@@ -255,6 +267,7 @@ function delete_function(id, wkt, il, ilce,) {
     var cur_ilce = ilce;
 
     cur_button.onclick = function () {
+        debugger
         var deleted_row = document.getElementById(id);
         deleted_row.parentNode.removeChild(deleted_row);
         delete_data(id, cur_il, cur_ilce, cur_wkt);
@@ -331,9 +344,29 @@ addInteractions();
 
 // ajax-part
 
+
+// function is_in_turkey(point_wkt) {
+//     $.ajax({
+//         url: "https://localhost:44398/api/parcel/compare",
+//         dataType: "json",
+//         type: "get",
+//         contentType: "application/json",
+//     });
+// }
+
+// function does_intersect(point_wkt) {
+//     $.ajax({
+//         url: "https://localhost:44398/api/parcel/intersect",
+//         dataType: "json",
+//         type: "get",
+//         contentType: "application/json",
+//     });
+// }
+
+
 function get_one(id) {
     $.ajax({
-        url: "https://localhost:44308/api/parcel",
+        url: "https://localhost:44398/api/parcel",
         dataType: "json",
         type: "get",
         contentType: "application/json",
@@ -349,7 +382,7 @@ function get_one(id) {
 
 function get_all_data() {
     $.ajax({
-        url: "https://localhost:44308/api/parcel",
+        url: "https://localhost:44398/api/parcel",
         dataType: "json",
         type: "get",
         contentType: "application/json",
@@ -372,7 +405,7 @@ function get_all_data() {
 }
 function send_data(sended_, sended_il, sended_ilce, sended_wkt) {
     $.ajax({
-        url: "https://localhost:44308/api/parcel",
+        url: "https://localhost:44398/api/parcel",
         dataType: "json",
         type: "post",
         contentType: "application/json",
@@ -385,7 +418,7 @@ function send_data(sended_, sended_il, sended_ilce, sended_wkt) {
 
 function delete_data(deleted_, deleted_il, deleted_ilce, deleted_wkt) {
     $.ajax({
-        url: "https://localhost:44308/api/parcel",
+        url: "https://localhost:44398/api/parcel",
         dataType: "json",
         type: "delete",
         contentType: "application/json",
@@ -395,7 +428,7 @@ function delete_data(deleted_, deleted_il, deleted_ilce, deleted_wkt) {
 
 function update_data(updated_, updated_il, updated_ilce, updated_wkt) {
     $.ajax({
-        url: "https://localhost:44308/api/parcel/update",
+        url: "https://localhost:44398/api/parcel/update",
         dataType: "json",
         type: "post",
         contentType: "application/json",
@@ -405,7 +438,7 @@ function update_data(updated_, updated_il, updated_ilce, updated_wkt) {
 
 function get() {
     $.ajax({
-        url: 'https://localhost:44308/api/parcel',
+        url: 'https://localhost:44398/api/parcel',
         dataType: 'json',
         type: 'get',
         contentType: 'application/json',
