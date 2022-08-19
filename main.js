@@ -87,9 +87,20 @@ function addInteractions() {
 
     draw.on('drawend', function (evt) {
         var sended_geometry_coordinates = evt.feature.getGeometry().getCoordinates();
-        console.log(sended_geometry_coordinates);
+        //console.log(sended_geometry_coordinates);
         cur_feature = evt.feature;
         cur_wkt = wkt.writeFeature(evt.feature);
+        //console.log(cur_wkt);
+        var cur_arr = convert_string_to_lonlat(cur_wkt);
+        //console.log(cur_arr.length)
+        if (cur_arr.length > 1) {
+            jQuery.get("https://localhost:44398/api/parcel/intersect", { lon: cur_arr[1], lat: cur_arr[2] }, function (data) {
+                console.log(data.il);
+                il_selected = data.il;
+
+            })
+            //console.log(intersected_il)
+        }
 
         if (il_selected != undefined && il_selected != "Varsayılan") {
             document.getElementById("il").value = il_selected;
@@ -139,6 +150,7 @@ function addInteractions() {
 
 const typeSelect = document.getElementById('type_selection');
 typeSelect.onchange = function () {
+    il_selected = " ";
     console.log("type_select_changed");
     map.removeInteraction(draw);
     map.removeInteraction(snap);
@@ -196,14 +208,18 @@ ilSelect.onchange = function () {
 };
 
 function convert_string_to_lonlat(curr_wkt) {
+    var arr = [];
     var ilk = curr_wkt.split("(");
-    var ilk_ = ilk[1].split(" ");
-    var ikinci = ilk_[1].split(")");
-    var ilk_float = parseFloat(ilk_[0]);
-    var ikinci_float = parseFloat(ikinci[0]);
-    var arr;
-    arr[0] = ilk_float;
-    arr[1] = ikinci_float;
+    arr[0] = ilk[0];
+    if (arr[0] == 'POINT') {
+        var ilk_ = ilk[1].split(" ");
+        var ikinci = ilk_[1].split(")");
+        var ilk_float = parseFloat(ilk_[0]);
+        var ikinci_float = parseFloat(ikinci[0]);
+        arr[1] = ilk_float;
+        arr[2] = ikinci_float;
+        //console.log(arr)
+    }
     return arr;
 }
 function clear_saves() {
@@ -340,6 +356,7 @@ function update_function(id, wkt, il, ilce,) {
         }
     }
 }
+
 addInteractions();
 
 // ajax-part
@@ -449,4 +466,18 @@ function get() {
             }
         }
     });
+}
+
+function does_intersect(longitude, latitude) {
+    $.ajax({
+        url: 'https://localhost:44398/api/parcel/intersect',
+        dataType: 'json',
+        type: 'get',
+        contentType: 'application/json',
+        data: ({ "lon": longitude, "lat": latitude }),
+        success: function (data) {
+            console.log(typeof (data))
+            il_selected = random_il;
+        }
+    })
 }
